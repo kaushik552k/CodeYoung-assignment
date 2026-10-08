@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Mentor {
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  timezone  String    @default("Asia/Kolkata")
+  bookings  Booking[]
+  createdAt DateTime  @default(now())
+}
+
+model Booking {
+  id          String   @id @default(cuid())
+  mentor      Mentor   @relation(fields: [mentorId], references: [id])
+  mentorId    String
+  parentName  String
+  parentEmail String
+  parentTz    String
+  slotUtc     DateTime
+  classLink   String
+  status      String   @default("CONFIRMED")
+  createdAt   DateTime @default(now())
+
+  @@index([mentorId, slotUtc])
+  @@index([slotUtc])
+}
